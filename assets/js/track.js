@@ -18,6 +18,21 @@
   }
   var attr = readAttr();
 
+  // Pixel de Meta. Se carga solo si hay id: sin esto window.fbq no existe
+  // y todos los track() de abajo se pierden sin avisar.
+  if (CFG.meta_pixel_id && CFG.meta_pixel_id !== 'PENDING') {
+    !function (f, b, e, v, n, t, s) {
+      if (f.fbq) return; n = f.fbq = function () {
+        n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+      };
+      if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = [];
+      t = b.createElement(e); t.async = !0; t.src = v;
+      s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s);
+    }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+    window.fbq('init', CFG.meta_pixel_id);
+    window.fbq('track', 'PageView');
+  }
+
   function track(name, params) {
     var d = Object.assign({}, attr, params || {});
     if (window.gtag) window.gtag('event', name, d);
